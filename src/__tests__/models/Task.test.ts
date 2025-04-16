@@ -1,24 +1,28 @@
 import mongoose from 'mongoose';
 import Task, { TaskStatus, TaskPriority } from '../../models/Task';
+import { connect, clearDatabase, closeDatabase } from '../setupTests';
+
+// Define a type for mongoose validation errors
+interface ValidationError extends Error {
+  errors: {
+    [path: string]: mongoose.Error.ValidatorError;
+  };
+}
 
 describe('Task Model', () => {
-  // Connect to the MongoDB Memory Server before tests
+  // Use the shared database connection
   beforeAll(async () => {
-    if (mongoose.connection.readyState === 0) {
-      // Use a test database URL from environment or a default test URL
-      const url = process.env.TEST_MONGODB_URI || 'mongodb://localhost:27017/task-management-test';
-      await mongoose.connect(url);
-    }
+    await connect();
   });
 
   // Clear the database between tests
   afterEach(async () => {
-    await Task.deleteMany({});
+    await clearDatabase();
   });
 
   // Disconnect after all tests
   afterAll(async () => {
-    await mongoose.connection.close();
+    await closeDatabase();
   });
 
   it('should create a new task successfully', async () => {
@@ -50,20 +54,20 @@ describe('Task Model', () => {
 
   it('should fail validation if required fields are missing', async () => {
     const task = new Task({});
-    let error;
+    let error: ValidationError | null = null;
 
     try {
       await task.validate();
     } catch (e) {
-      error = e;
+      error = e as ValidationError;
     }
 
     expect(error).toBeDefined();
-    expect(error.errors.title).toBeDefined();
-    expect(error.errors.description).toBeDefined();
-    expect(error.errors.project).toBeDefined();
-    expect(error.errors.assignedTo).toBeDefined();
-    expect(error.errors.createdBy).toBeDefined();
+    expect(error?.errors.title).toBeDefined();
+    expect(error?.errors.description).toBeDefined();
+    expect(error?.errors.project).toBeDefined();
+    expect(error?.errors.assignedTo).toBeDefined();
+    expect(error?.errors.createdBy).toBeDefined();
   });
 
   it('should have default status of PENDING if not provided', () => {

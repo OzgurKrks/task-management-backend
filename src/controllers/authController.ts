@@ -73,6 +73,12 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         message: `Duplicate key error. The ${keyField} "${keyValue}" is already in use.`,
         field: keyField
       });
+    } else if (error.name === 'ValidationError') {
+      // Handle mongoose validation errors (return 400)
+      res.status(400).json({ 
+        message: 'Validation error',
+        errors: error.errors
+      });
     } else {
       res.status(500).json({ 
         message: 'Server error during registration',

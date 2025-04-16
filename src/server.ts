@@ -74,21 +74,34 @@ io.on('connection', (socket) => {
   });
 });
 
-// Connect to MongoDB
-const MONGODB_URI = process.env.MONGODB_URI?.replace('<db_password>', process.env.DB_PASSWORD || '');
-const PORT = process.env.PORT || 5000;
+// Connect to MongoDB and start server function
+const startServer = async () => {
+  const MONGODB_URI = process.env.MONGODB_URI?.replace('<db_password>', process.env.DB_PASSWORD || '');
+  const PORT = process.env.PORT || 5000;
 
-mongoose.connect(MONGODB_URI || '')
-  .then(() => {
-    console.log('Connected to MongoDB');
+  try {
+    // Only connect if not already connected (for testing)
+    if (mongoose.connection.readyState === 0) {
+      await mongoose.connect(MONGODB_URI || '');
+      console.log('Connected to MongoDB');
+    }
+    
     httpServer.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
-  })
-  .catch((err) => {
+    
+    return httpServer;
+  } catch (err) {
     console.error('Failed to connect to MongoDB:', err);
-  });
+    throw err;
+  }
+};
+
+// Start the server only if this file is run directly (not imported in tests)
+if (process.env.NODE_ENV !== 'test') {
+  startServer();
+}
 
 // Export socket.io instance for use in other files
-export { io };
+export { io, startServer, httpServer };
 export default app; 
