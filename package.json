@@ -4,6 +4,7 @@
   "main": "dist/server.js",
   "scripts": {
     "start": "node dist/server.js",
+    "prestart": "npm run build",
     "dev": "nodemon src/server.ts",
     "build": "tsc -p .",
     "test": "jest",
@@ -13,7 +14,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Task management backend application",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
