@@ -455,6 +455,7 @@ export const searchProjects = async (req: Request, res: Response): Promise<void>
       return;
     }
     
+    // Create the search pattern query
     let query: any = {
       $or: [
         { name: { $regex: searchQuery, $options: 'i' } },
@@ -462,21 +463,19 @@ export const searchProjects = async (req: Request, res: Response): Promise<void>
       ]
     };
     
-    // Admin can see all projects
-    if (req.user.role !== UserRole.ADMIN) {
-      // For non-admin, only show projects they are a member of or own
-      query = {
-        $and: [
-          query,
-          {
-            $or: [
-              { owner: req.user._id },
-              { members: { $in: [req.user._id] } }
-            ]
-          }
-        ]
-      };
-    }
+    // Always restrict to projects the user owns or is a member of
+    // regardless of admin status - only show projects they created or are members of
+    query = {
+      $and: [
+        query,
+        {
+          $or: [
+            { owner: req.user._id },
+            { members: { $in: [req.user._id] } }
+          ]
+        }
+      ]
+    };
     
     const projects = await Project.find(query)
       .populate('owner', 'name email')
