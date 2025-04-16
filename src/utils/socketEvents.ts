@@ -1,4 +1,4 @@
-import { io } from '../index';
+import { io } from '../server';
 import { ITask } from '../models/Task';
 import { IProject } from '../models/Project';
 import mongoose from 'mongoose';
