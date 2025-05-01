@@ -2,11 +2,6 @@
 
 Bu proje, kullanıcıların projeler oluşturup bu projeler altında görevler atayabileceği, takip edebileceği ve yönetebileceği, modern bir görev yönetim sisteminin backend API'sini içermektedir.
 
-## 🚀 Demo
-
-Uygulamanın canlı demo versiyonuna aşağıdaki bağlantıdan erişebilirsiniz:
-**[https://task-management-frontend-three-ashen.vercel.app/](https://task-management-frontend-three-ashen.vercel.app/)**
-
 ## 🌟 Özellikler
 
 - **Kullanıcı Yönetimi**: Kayıt, giriş ve kullanıcı profil yönetimi
